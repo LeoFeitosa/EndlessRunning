@@ -8,8 +8,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float forwardSpeed = 0.06f;
     [SerializeField] private float laneDistanceX = 3;
 
+    [Header("Jump")]
+    [SerializeField] private float jumpDistanceZ = 5;
+    [SerializeField] private float jumpHeightY = 2;
+
     Vector3 initialPosition;
     float targetPositionX;
+
+    bool isJumping;
+    float jumpStartZ;
 
     private float LeftLaneX => initialPosition.x - laneDistanceX;
     private float RightLaneX => initialPosition.x + laneDistanceX;
@@ -25,6 +32,7 @@ public class PlayerController : MonoBehaviour
 
         Vector3 position = transform.position;
         position.x = ProcessLaneMovement();
+        position.y = ProcessJump();
         position.z = ProcessForwardMovement();
 
         transform.position = position;
@@ -40,6 +48,12 @@ public class PlayerController : MonoBehaviour
         {
             targetPositionX += laneDistanceX;
         }
+        if (Input.GetKeyDown(KeyCode.W) && !isJumping)
+        {
+            isJumping = true;
+            jumpStartZ = transform.position.z;
+        }
+
         targetPositionX = Mathf.Clamp(targetPositionX, LeftLaneX, RightLaneX);
     }
 
@@ -51,5 +65,29 @@ public class PlayerController : MonoBehaviour
     private float ProcessForwardMovement()
     {
         return transform.position.z + forwardSpeed * Time.deltaTime;
+    }
+
+    private float ProcessJump()
+    {
+        float deltaY = 0;
+        if (isJumping)
+        {
+            //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo
+            float jumpCurrentProgress = transform.position.z - jumpStartZ;
+
+            //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo dividida pelo distancia do pulo setada
+            float jumpPercent = jumpCurrentProgress / jumpDistanceZ;
+
+            // se jumpPercent for 1 significa que a distancia setada em jumpDistanceZ foi totalmente percorrida
+            if (jumpPercent <= 1)
+            {
+                deltaY = Mathf.Sin(Mathf.PI * jumpPercent) * jumpHeightY;
+            }
+            else
+            {
+                isJumping = false;
+            }
+        }
+        return initialPosition.y + deltaY;
     }
 }

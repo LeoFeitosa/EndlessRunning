@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -15,7 +13,7 @@ public class PlayerController : MonoBehaviour
     Vector3 initialPosition;
     float targetPositionX;
 
-    bool isJumping;
+    public bool IsJumping {get; private set;}
     float jumpStartZ;
 
     private float LeftLaneX => initialPosition.x - laneDistanceX;
@@ -48,9 +46,9 @@ public class PlayerController : MonoBehaviour
         {
             targetPositionX += laneDistanceX;
         }
-        if (Input.GetKeyDown(KeyCode.W) && !isJumping)
+        if (Input.GetKeyDown(KeyCode.W) && !IsJumping)
         {
-            isJumping = true;
+            IsJumping = true;
             jumpStartZ = transform.position.z;
         }
 
@@ -70,7 +68,7 @@ public class PlayerController : MonoBehaviour
     private float ProcessJump()
     {
         float deltaY = 0;
-        if (isJumping)
+        if (IsJumping)
         {
             //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo
             float jumpCurrentProgress = transform.position.z - jumpStartZ;
@@ -85,7 +83,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                isJumping = false;
+                IsJumping = false;
             }
         }
         return initialPosition.y + deltaY;

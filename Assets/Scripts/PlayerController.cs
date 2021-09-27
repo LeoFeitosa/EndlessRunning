@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
         position.y = ProcessJump();
         position.z = ProcessForwardMovement();
         ProcessRoll();
+        ChangeColliders();
 
         transform.position = position;
     }
@@ -117,8 +118,6 @@ public class PlayerController : MonoBehaviour
         float rollPercent = 0;
         if (IsRoll)
         {
-            ChangeColliders();
-
             //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo
             float rollCurrentProgress = transform.position.z - rollStartZ;
             Debug.Log($"transform.position.z->{transform.position.z} rollStartZ->{rollStartZ}");
@@ -130,7 +129,6 @@ public class PlayerController : MonoBehaviour
             if (rollPercent >= 1)
             {
                 IsRoll = false;
-                ChangeColliders();
             }
         }
         return rollPercent;
@@ -138,8 +136,16 @@ public class PlayerController : MonoBehaviour
 
     private void ChangeColliders()
     {
-        RegularCollider.enabled = !RegularCollider.enabled;
-        RollCollider.enabled = !RollCollider.enabled;
+        if (IsRoll)
+        {
+            RegularCollider.enabled = false;
+            RollCollider.enabled = true;
+        }
+        else
+        {
+            RegularCollider.enabled = true;
+            RollCollider.enabled = false;
+        }
     }
 
     public void Die()

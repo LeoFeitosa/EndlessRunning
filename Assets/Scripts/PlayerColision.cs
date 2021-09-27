@@ -9,6 +9,7 @@ public static class GameTags
 
 public class PlayerColision : MonoBehaviour
 {
+    [SerializeField] private GameMode gameMode;
     private PlayerController playerController;
     private PlayerAnimationControlller animationControlller;
 
@@ -30,6 +31,7 @@ public class PlayerColision : MonoBehaviour
         {
             playerController.Die();
             animationControlller.Die();
+            gameMode.OnGameOver();
         }
     }
 }

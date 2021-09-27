@@ -9,23 +9,27 @@ public class PlayerController : MonoBehaviour
     [Header("Jump")]
     [SerializeField] private float jumpDistanceZ = 5;
     [SerializeField] private float jumpHeightY = 2;
+    [SerializeField] private float jumpLerpSpeed = 8;
 
     [Header("Roll")]
     [SerializeField] private float rollDistanceZ = 5;
 
     [Header("Colliders")]
-    [SerializeField] BoxCollider RegularCollider;
-    [SerializeField] BoxCollider RollCollider;
+    [SerializeField] Collider regularCollider;
+    [SerializeField] Collider rollCollider;
 
     Vector3 initialPosition;
     float targetPositionX;
 
     public bool IsJumping { get; private set; }
 
-    public bool IsRoll { get; private set; }
+    public bool IsRolling { get; private set; }
 
     public float JumpDuration => jumpDistanceZ / forwardSpeed;
     public float RollDuration => rollDistanceZ / forwardSpeed;
+
+    private bool CanJump => !IsJumping;
+    private bool CanRoll => !IsRolling;
 
     float jumpStartZ;
 
@@ -37,7 +41,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         initialPosition = transform.position;
-        RollCollider.enabled = false;
+        StopRoll();
     }
 
     void Update()
@@ -49,7 +53,6 @@ public class PlayerController : MonoBehaviour
         position.y = ProcessJump();
         position.z = ProcessForwardMovement();
         ProcessRoll();
-        ChangeColliders();
 
         transform.position = position;
     }
@@ -64,15 +67,13 @@ public class PlayerController : MonoBehaviour
         {
             targetPositionX += laneDistanceX;
         }
-        if (Input.GetKeyDown(KeyCode.W) && !IsJumping)
+        if (Input.GetKeyDown(KeyCode.W) && CanJump)
         {
-            IsJumping = true;
-            jumpStartZ = transform.position.z;
+            StartJump();
         }
-        if (Input.GetKeyDown(KeyCode.S) && !IsRoll)
+        if (Input.GetKeyDown(KeyCode.S) && CanRoll)
         {
-            IsRoll = true;
-            rollStartZ = transform.position.z;
+            StartRoll();
         }
 
         targetPositionX = Mathf.Clamp(targetPositionX, LeftLaneX, RightLaneX);
@@ -95,7 +96,6 @@ public class PlayerController : MonoBehaviour
         {
             //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo
             float jumpCurrentProgress = transform.position.z - jumpStartZ;
-            //Debug.Log($"transform.position.z->{transform.position.z} jumpStartZ->{jumpStartZ}");
 
             //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo dividida pelo distancia do pulo setada
             float jumpPercent = jumpCurrentProgress / jumpDistanceZ;
@@ -107,49 +107,63 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                IsJumping = false;
+                StopJump();
             }
         }
-        return initialPosition.y + deltaY;
+        float targetPositionY = initialPosition.y + deltaY;
+        return Mathf.Lerp(transform.position.y, targetPositionY, Time.deltaTime * jumpLerpSpeed);
     }
 
-    private float ProcessRoll()
+    private void StartJump()
     {
-        float rollPercent = 0;
-        if (IsRoll)
+        IsJumping = true;
+        jumpStartZ = transform.position.z;
+        StopRoll();
+    }
+
+    private void StopJump()
+    {
+        IsJumping = false;
+    }
+
+    private void ProcessRoll()
+    {
+        if (IsRolling)
         {
             //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo
             float rollCurrentProgress = transform.position.z - rollStartZ;
-            Debug.Log($"transform.position.z->{transform.position.z} rollStartZ->{rollStartZ}");
 
             //posicao Z atual menos a posicao Z que estava quando foi precionado botao de pulo dividida pelo distancia do pulo setada
-            rollPercent = rollCurrentProgress / rollDistanceZ;
-            Debug.Log($"rollCurrentProgress->{rollCurrentProgress}/rollDistanceZ->{rollDistanceZ} = {rollPercent}");
+            float rollPercent = rollCurrentProgress / rollDistanceZ;
+
             // se jumpPercent for 1 significa que a distancia setada em jumpDistanceZ foi totalmente percorrida
             if (rollPercent >= 1)
             {
-                IsRoll = false;
+                StopRoll();
             }
         }
-        return rollPercent;
     }
 
-    private void ChangeColliders()
+    private void StartRoll()
     {
-        if (IsRoll)
-        {
-            RegularCollider.enabled = false;
-            RollCollider.enabled = true;
-        }
-        else
-        {
-            RegularCollider.enabled = true;
-            RollCollider.enabled = false;
-        }
+        rollStartZ = transform.position.z;
+        IsRolling = true;
+        regularCollider.enabled = false;
+        rollCollider.enabled = true;
+        StopJump();
+    }
+
+    private void StopRoll()
+    {
+        IsRolling = false;
+        regularCollider.enabled = true;
+        rollCollider.enabled = false;
     }
 
     public void Die()
     {
-        enabled = false;
+        forwardSpeed = 0;
+        StopJump();
+        StopRoll();
     }
 }

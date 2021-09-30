@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GameTags
-{
-    public const string Obstacle = "Obstacle";
-}
-
 public class PlayerColision : MonoBehaviour
 {
     [SerializeField] private GameMode gameMode;

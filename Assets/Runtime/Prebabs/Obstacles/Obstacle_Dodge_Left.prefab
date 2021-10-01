@@ -82,6 +82,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4711951346426069544
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365928171413608597}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 4, z: 1}
+  m_Center: {x: 1, y: 1.5, z: 0}
 --- !u!1001 &7675636172466195856
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -153,8 +166,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2580726010713835933, guid: b827eaa99d8fccd4687f50093083a016, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b827eaa99d8fccd4687f50093083a016, type: 3}
+--- !u!1 &1365928171413608597 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8678882888649938181, guid: b827eaa99d8fccd4687f50093083a016, type: 3}
+  m_PrefabInstance: {fileID: 7675636172466195856}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1365928171413608603 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8678882888649938187, guid: b827eaa99d8fccd4687f50093083a016, type: 3}

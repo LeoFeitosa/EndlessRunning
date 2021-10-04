@@ -170,7 +170,7 @@ MonoBehaviour:
   - {fileID: 6656235347436604945, guid: d5b3f2ddec0c2e44da5cec39ebbe2a16, type: 3}
   - {fileID: 6656235347436604945, guid: 21fd98909f138384b84b510118c98309, type: 3}
   firstTrackPrefab: {fileID: -5026976801364440502, guid: 315ede7e374523043b8004d2499eff2d, type: 3}
-  initialTrackCount: 20
+  initialTrackCount: 30
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,15 +4,30 @@ using UnityEngine;
 public class EndlessTrackGenerator : MonoBehaviour
 {
     [SerializeField] private PlayerController player;
-    [SerializeField] private TrackSegment[] segmentPrefabs;
     [SerializeField] private TrackSegment firstTrackPrefab;
+    [SerializeField] private TrackSegment[] easyTrackPrefabs;
+    [SerializeField] private TrackSegment[] hardTrackPrefabs;
 
     [Header("Endless generation parameter")]
     [Space]
     [SerializeField] private int initialTrackCount = 10;
     [SerializeField] private int minTracksInFrontOfPlayer = 3;
     [SerializeField] private float minDistanceToConsiderInsideTrack = 3;
+
+    [Header("Level dificulty parameters")]
+    [Space]
+    [Range(0, 1)]
+    [SerializeField] private float hardTrackChance = 0.2f;
+    [SerializeField] private int minTracksBeforeReward = 10;
+    [SerializeField] private int maxTracksBeforeReward = 20;
+    [SerializeField] private int minRewardTrackCount = 1;
+    [SerializeField] private int maxRewardTrackCount = 3;
+
     private List<TrackSegment> currentSegments = new List<TrackSegment>();
+
+    private bool isSpawningRewardTracks = false;
+    private int rewardTracksLeftToSpawn = 0;
+    private int trackSpawnedAfterLastReward = 0;
 
     void Start()
     {
@@ -22,10 +37,10 @@ public class EndlessTrackGenerator : MonoBehaviour
 
     void Update()
     {
-        GameLoop();
+        UpdateTracks();
     }
 
-    private void GameLoop()
+    private void UpdateTracks()
     {
         //em qual track o player esta
         int playerTrackIndex = FindTrackIndexWithPlayer();
@@ -85,10 +100,15 @@ public class EndlessTrackGenerator : MonoBehaviour
 
         for (int i = 0; i < trackCount; i++)
         {
-            int index = Random.Range(0, segmentPrefabs.Length);
-            var track = segmentPrefabs[index];
+            var track = GetRandomTrack();
             previousTrack = SpawnTrackSegment(track, previousTrack);
         }
+    }
+
+    private TrackSegment GetRandomTrack()
+    {
+        TrackSegment[] trackList = Random.value <= hardTrackChance ? hardTrackPrefabs : easyTrackPrefabs;
+        return trackList[Random.Range(0, trackList.Length)];
     }
 
     private TrackSegment SpawnTrackSegment(TrackSegment track, TrackSegment previousTrack)
@@ -112,7 +132,31 @@ public class EndlessTrackGenerator : MonoBehaviour
 
         currentSegments.Add(trackInstance);
 
+        UpdateRewardTracking();
+
         return trackInstance;
     }
 
+    private void UpdateRewardTracking()
+    {
+        if (isSpawningRewardTracks)
+        {
+            rewardTracksLeftToSpawn--;
+            if (rewardTracksLeftToSpawn < -0)
+            {
+                isSpawningRewardTracks = false;
+                trackSpawnedAfterLastReward = 0;
+            }
+        }
+        else
+        {
+            rewardTracksLeftToSpawn++;
+            int requiretTracksBeforeReward = Random.Range(minTracksBeforeReward, maxTracksBeforeReward + 1);
+            if (trackSpawnedAfterLastReward >= requiretTracksBeforeReward)
+            {
+                isSpawningRewardTracks = true;
+                rewardTracksLeftToSpawn = Random.Range(minRewardTrackCount, maxRewardTrackCount + 1);
+            }
+        }
+    }
 }

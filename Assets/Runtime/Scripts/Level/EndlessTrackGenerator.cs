@@ -11,6 +11,7 @@ public class EndlessTrackGenerator : MonoBehaviour
     [Space]
     [SerializeField] private int initialTrackCount = 10;
     [SerializeField] private int minTracksInFrontOfPlayer = 3;
+    [SerializeField] private float minDistanceToConsiderInsideTrack = 3;
     private List<TrackSegment> currentSegments = new List<TrackSegment>();
 
     void Start()
@@ -21,31 +22,73 @@ public class EndlessTrackGenerator : MonoBehaviour
 
     void Update()
     {
+        GameLoop();
+    }
+
+    private void GameLoop()
+    {
         //em qual track o player esta
+        int playerTrackIndex = FindTrackIndexWithPlayer();
+
+        if (playerTrackIndex < 0)
+        {
+            return;
+        }
+
+        InstantiateTracksInFrontOfPlayer(playerTrackIndex);
+        DestroyTrackBehindPlayer(playerTrackIndex);
+    }
+
+    private void DestroyTrackBehindPlayer(int playerTrackIndex)
+    {
+        //destroi track atras do player
+        for (int i = 0; i < playerTrackIndex; i++)
+        {
+            TrackSegment track = currentSegments[i];
+            Destroy(track.gameObject);
+        }
+        currentSegments.RemoveRange(0, playerTrackIndex);
+    }
+
+    private void InstantiateTracksInFrontOfPlayer(int playerTrackIndex)
+    {
+        //instanciar tracks na frente do player se necessario
+        int tracksInFrontOfPlayer = currentSegments.Count - (playerTrackIndex - 1);
+        if (tracksInFrontOfPlayer < minTracksInFrontOfPlayer)
+        {
+            SpawnTracks(minTracksInFrontOfPlayer - tracksInFrontOfPlayer);
+        }
+    }
+
+    private int FindTrackIndexWithPlayer()
+    {
         int playerTrackIndex = -1;
         for (int i = 0; i < currentSegments.Count; i++)
         {
             TrackSegment track = currentSegments[i];
-            if (player.transform.position.z >= track.Start.position.z &&
+            if (player.transform.position.z >= (track.Start.position.z + minDistanceToConsiderInsideTrack) &&
             player.transform.position.z <= track.End.position.z)
             {
                 playerTrackIndex = i;
                 break;
             }
-
-            if (playerTrackIndex < 0)
-            {
-                return;
-            }
         }
 
-        //instanciar tracks na frente do player se necessario
-        int trackInFrontOfPlayer = currentSegments.Count - (playerTrackIndex - 1);
-        if (trackInFrontOfPlayer < minTracksInFrontOfPlayer)
+        return playerTrackIndex;
+    }
+
+    private void SpawnTracks(int trackCount)
+    {
+        TrackSegment previousTrack = currentSegments.Count > 0
+        ? currentSegments[currentSegments.Count - 1]
+        : null;
+
+        for (int i = 0; i < trackCount; i++)
         {
-
+            int index = Random.Range(0, segmentPrefabs.Length);
+            var track = segmentPrefabs[index];
+            previousTrack = SpawnTrackSegment(track, previousTrack);
         }
-
     }
 
     private TrackSegment SpawnTrackSegment(TrackSegment track, TrackSegment previousTrack)
@@ -70,20 +113,6 @@ public class EndlessTrackGenerator : MonoBehaviour
         currentSegments.Add(trackInstance);
 
         return trackInstance;
-    }
-
-    private void SpawnTracks(int trackCount)
-    {
-        TrackSegment previousTrack = currentSegments.Count > 0
-        ? currentSegments[currentSegments.Count - 1]
-        : null;
-
-        for (int i = 0; i < trackCount; i++)
-        {
-            int index = Random.Range(0, segmentPrefabs.Length);
-            var track = segmentPrefabs[index];
-            previousTrack = SpawnTrackSegment(track, previousTrack);
-        }
     }
 
 }

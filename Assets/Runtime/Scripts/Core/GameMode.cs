@@ -13,6 +13,7 @@ public class GameMode : MonoBehaviour
 
     private IEnumerator ReloadGameCoroutine()
     {
+        //esperar uma frame
         yield return new WaitForSeconds(reloadGameDelay);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

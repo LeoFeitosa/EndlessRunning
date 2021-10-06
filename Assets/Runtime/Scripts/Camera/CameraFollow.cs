@@ -14,6 +14,7 @@ public class CameraFollow : MonoBehaviour
         Vector3 targetPosition = player.transform.position;
 
         currentPosition.z = targetPosition.z + armZ;
+
         transform.position = currentPosition;
     }
 }

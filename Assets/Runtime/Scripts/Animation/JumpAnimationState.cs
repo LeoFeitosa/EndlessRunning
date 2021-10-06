@@ -7,14 +7,16 @@ public class JumpAnimationState : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //olha a duração de animação do pulo
+        //olha a duracao da animacao de pulo 
         AnimatorClipInfo[] clips = animator.GetNextAnimatorClipInfo(layerIndex);
         if (clips.Length > 0)
         {
             AnimatorClipInfo jumpClipInfo = clips[0];
-            //ola a duração do pulo no gameplay
-            //arrumar depois
+            //olha a duracao do pulo do gameplay
+            //TODO: Assumindo que o PlayerController esta no objeto pai. Resolver isso.
             PlayerController player = animator.transform.parent.GetComponent<PlayerController>();
+
+            //setar o JumpMultiplier para que a duracao final da animacao de pulo seja = a duracao do pulo no gameplay
             float multiplier = jumpClipInfo.clip.length / player.JumpDuration;
             animator.SetFloat(PlayerAnimationConstants.JumpMultiplier, multiplier);
         }

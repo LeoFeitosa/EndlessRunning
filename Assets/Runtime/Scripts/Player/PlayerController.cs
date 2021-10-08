@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float baseScoreMultiplier = 1;
     private float score;
     public int Score => Mathf.RoundToInt(score);
+    public float TravelledDistance => transform.position.z - initialPosition.z;
 
     void Awake()
     {

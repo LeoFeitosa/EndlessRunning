@@ -73,6 +73,7 @@ MonoBehaviour:
   rollDistanceZ: 5
   regularCollider: {fileID: 1039976785679729350}
   rollCollider: {fileID: 1039976785598287840}
+  baseScoreMultiplier: 1.5
 --- !u!114 &1039976784133768174
 MonoBehaviour:
   m_ObjectHideFlags: 0

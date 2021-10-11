@@ -8,6 +8,7 @@ public class GameMode : MonoBehaviour
     [SerializeField] PlayerController player;
     [SerializeField] PlayerAnimationController playerAnimationController;
     [SerializeField] MainHUD mainHUD;
+    [SerializeField] MusicPlayer musicPlayer;
     [SerializeField] private float reloadGameDelay = 3;
     [SerializeField]
     [Range(0, 5)]
@@ -15,10 +16,16 @@ public class GameMode : MonoBehaviour
 
     void Awake()
     {
+        SetWaitForStartGameState();
+    }
+
+    private void SetWaitForStartGameState()
+    {
         player.enabled = false;
         mainHUD.ShowStartGameOverlay();
+        musicPlayer.PlayStartMenuMusic();
     }
-    
+
     public void OnGameOver()
     {
         StartCoroutine(ReloadGameCoroutine());
@@ -46,7 +53,9 @@ public class GameMode : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    private IEnumerator StartGameCor(){
+    private IEnumerator StartGameCor()
+    {
+        musicPlayer.PlayMainTrackMusic();
         yield return StartCoroutine(mainHUD.PlayStartGameCountdown(startGameCountdown));
         playerAnimationController.PlayStartGameAnimation();
     }

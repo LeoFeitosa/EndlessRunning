@@ -17,11 +17,12 @@ public class MainHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI distanceText;
     [SerializeField] private TextMeshProUGUI countdownText;
-
+    private MainHUDAudioController audioController;
 
     void Awake()
     {
         ShowHudOverlay();
+        audioController = GetComponent<MainHUDAudioController>();
     }
 
     void LateUpdate()
@@ -81,17 +82,27 @@ public class MainHUD : MonoBehaviour
         float timeToStart = Time.time + countdownSeconds;
         yield return null;
         countdownText.gameObject.SetActive(true);
+        int previousRemainingTimeInt = countdownSeconds;
         while (Time.time <= timeToStart)
         {
             float remainingTime = timeToStart - Time.time;
-            int remaininsTimeInt = Mathf.FloorToInt(remainingTime);
-            countdownText.text = (remaininsTimeInt + 1).ToString();
-            
+            int remainingTimeInt = Mathf.FloorToInt(remainingTime);
+            countdownText.text = (remainingTimeInt + 1).ToString();
+
+            //tocar o audio quando o numero trocar
+            if (previousRemainingTimeInt != remainingTimeInt)
+            {
+                audioController.PlayCountdownSound();
+            }
+            previousRemainingTimeInt = remainingTimeInt;
+
             //animacao
-            float percent = remainingTime - remaininsTimeInt;
+            float percent = remainingTime - remainingTimeInt;
             countdownText.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, percent);
             yield return null;
         }
+
+        audioController.PlayCountdownFinishedSound();
 
         countdownText.gameObject.SetActive(false);
     }

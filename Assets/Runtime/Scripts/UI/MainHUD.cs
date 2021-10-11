@@ -9,12 +9,14 @@ public class MainHUD : MonoBehaviour
     [SerializeField] private GameMode gameMode;
 
     [Header("Overlays")]
+    [SerializeField] private GameObject startGameOverlay;
     [SerializeField] private GameObject hudOverlay;
     [SerializeField] private GameObject pauseOverlay;
 
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI distanceText;
+    [SerializeField] private TextMeshProUGUI countdownText;
 
 
     void Awake()
@@ -26,6 +28,11 @@ public class MainHUD : MonoBehaviour
     {
         scoreText.text = $"Score : {player.Score}";
         distanceText.text = $"Score : {Mathf.RoundToInt(player.TravelledDistance)}m";
+    }
+
+    public void StartGame()
+    {
+        gameMode.StartGame();
     }
 
     public void PauseGame()
@@ -40,15 +47,52 @@ public class MainHUD : MonoBehaviour
         ShowHudOverlay();
     }
 
+    public void ShowStartGameOverlay()
+    {
+        startGameOverlay.SetActive(true);
+        pauseOverlay.SetActive(false);
+        hudOverlay.SetActive(false);
+    }
+
     void ShowHudOverlay()
     {
+        startGameOverlay.SetActive(false);
         pauseOverlay.SetActive(false);
         hudOverlay.SetActive(true);
     }
 
     void ShowPauseOverlay()
     {
+        startGameOverlay.SetActive(false);
         pauseOverlay.SetActive(true);
         hudOverlay.SetActive(false);
+    }
+
+    public IEnumerator PlayStartGameCountdown(int countdownSeconds)
+    {
+        ShowHudOverlay();
+        countdownText.gameObject.SetActive(false);
+
+        if (countdownSeconds == 0)
+        {
+            yield break;
+        }
+
+        float timeToStart = Time.time + countdownSeconds;
+        yield return null;
+        countdownText.gameObject.SetActive(true);
+        while (Time.time <= timeToStart)
+        {
+            float remainingTime = timeToStart - Time.time;
+            int remaininsTimeInt = Mathf.FloorToInt(remainingTime);
+            countdownText.text = (remaininsTimeInt + 1).ToString();
+            
+            //animacao
+            float percent = remainingTime - remaininsTimeInt;
+            countdownText.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, percent);
+            yield return null;
+        }
+
+        countdownText.gameObject.SetActive(false);
     }
 }

@@ -5,7 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class GameMode : MonoBehaviour
 {
+    [SerializeField] PlayerController player;
+    [SerializeField] PlayerAnimationController playerAnimationController;
+    [SerializeField] MainHUD mainHUD;
     [SerializeField] private float reloadGameDelay = 3;
+    [SerializeField]
+    [Range(0, 5)]
+    private int startGameCountdown = 5;
+
+    void Awake()
+    {
+        player.enabled = false;
+        mainHUD.ShowStartGameOverlay();
+    }
+    
     public void OnGameOver()
     {
         StartCoroutine(ReloadGameCoroutine());
@@ -18,6 +31,11 @@ public class GameMode : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void StartGame()
+    {
+        StartCoroutine(StartGameCor());
+    }
+
     public void PauseGame()
     {
         Time.timeScale = 0;
@@ -26,5 +44,10 @@ public class GameMode : MonoBehaviour
     public void ResumeGame()
     {
         Time.timeScale = 1;
+    }
+
+    private IEnumerator StartGameCor(){
+        yield return StartCoroutine(mainHUD.PlayStartGameCountdown(startGameCountdown));
+        playerAnimationController.PlayStartGameAnimation();
     }
 }

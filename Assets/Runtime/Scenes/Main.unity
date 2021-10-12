@@ -1259,9 +1259,9 @@ AudioSource:
   m_GameObject: {fileID: 1310435061}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 6821379953432998036, guid: 2f3d36b903112d34db85ae8dfe3cc874, type: 2}
+  OutputAudioMixerGroup: {fileID: -8605089138821175006, guid: c07e61c505e4dfe4b96c2d76721cda45, type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -1532,7 +1532,7 @@ AudioSource:
   m_GameObject: {fileID: 1416770523}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -1639902672760474375, guid: 2f3d36b903112d34db85ae8dfe3cc874, type: 2}
+  OutputAudioMixerGroup: {fileID: 105000516025820046, guid: c07e61c505e4dfe4b96c2d76721cda45, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -2597,10 +2597,6 @@ PrefabInstance:
       propertyPath: musicPlayer
       value: 
       objectReference: {fileID: 1416770526}
-    - target: {fileID: 5473261710550771336, guid: 13e6af26070c6914283530aa501293e8, type: 3}
-      propertyPath: startGameCountdown
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 5473261710550771336, guid: 13e6af26070c6914283530aa501293e8, type: 3}
       propertyPath: playerAnimationController
       value: 

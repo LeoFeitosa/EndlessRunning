@@ -7,12 +7,12 @@ public class PlayerAnimationControlller : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     private PlayerController player;
-    private PlayerColision playerColision;
+    private PlayerCollision playerCollision;
 
     void Awake()
     {
         player = GetComponent<PlayerController>();
-        playerColision = GetComponent<PlayerColision>();
+        playerCollision = GetComponent<PlayerCollision>();
     }
 
     void Update()

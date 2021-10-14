@@ -5,18 +5,49 @@ using UnityEngine.SceneManagement;
 
 public class GameMode : MonoBehaviour
 {
+    [Header("Player")]
     [SerializeField] PlayerController player;
     [SerializeField] PlayerAnimationController playerAnimationController;
+
+    [Header("UI")]
     [SerializeField] MainHUD mainHUD;
+
     [SerializeField] MusicPlayer musicPlayer;
+
+    [Header("Gameplay")]
+    [SerializeField] private float startPlayerSpeed = 10;
+    [SerializeField] private float maxPlayerSpeed = 20;
+    [SerializeField] private float timeToMaxSpeedSeconds = 5 * 60;
+
     [SerializeField] private float reloadGameDelay = 3;
+
     [SerializeField]
     [Range(0, 5)]
     private int startGameCountdown = 5;
 
+    [Header("Score")]
+    [SerializeField] private int baseScoreMultiplier = 1;
+
+    private float score;
+    public int Score => Mathf.RoundToInt(score);
+
+    private float startGameTime;
+    private bool isGameRunning = false;
+
     void Awake()
     {
         SetWaitForStartGameState();
+    }
+
+    void Update()
+    {
+        if (isGameRunning)
+        {
+            float timePercent = (Time.time - startGameTime) / timeToMaxSpeedSeconds;
+            player.ForwardSpeed = Mathf.Lerp(startPlayerSpeed, maxPlayerSpeed, timePercent);
+            float extraScoreMultiplier = 1 + timePercent;
+            score += baseScoreMultiplier * extraScoreMultiplier * player.ForwardSpeed * Time.deltaTime;
+        }
     }
 
     private void SetWaitForStartGameState()
@@ -28,6 +59,7 @@ public class GameMode : MonoBehaviour
 
     public void OnGameOver()
     {
+        isGameRunning = false;
         StartCoroutine(ReloadGameCoroutine());
     }
 
@@ -59,6 +91,11 @@ public class GameMode : MonoBehaviour
     {
         musicPlayer.PlayMainTrackMusic();
         yield return StartCoroutine(mainHUD.PlayStartGameCountdown(startGameCountdown));
-        playerAnimationController.PlayStartGameAnimation();
+        yield return StartCoroutine(playerAnimationController.PlayStartGameAnimation());
+
+        player.enabled = true;
+        player.ForwardSpeed = startPlayerSpeed;
+        startGameTime = Time.time;
+        isGameRunning = true;
     }
 }

@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerAudioController audioController;
     [SerializeField] private float horizontalSpeed = 15;
-    [SerializeField] private float forwardSpeed = 10;
-
     [SerializeField] private float laneDistanceX = 4;
 
     [Header("Jump")]
@@ -27,14 +26,15 @@ public class PlayerController : MonoBehaviour
 
     float targetPositionX;
 
+    public float ForwardSpeed { get; set; } = 10;
     public bool IsJumping { get; private set; }
 
     private float rollStartZ;
     public bool IsRolling { get; private set; }
 
-    public float JumpDuration => jumpDistanceZ / forwardSpeed;
+    public float JumpDuration => jumpDistanceZ / ForwardSpeed;
 
-    public float RollDuration => rollDistanceZ / forwardSpeed;
+    public float RollDuration => rollDistanceZ / ForwardSpeed;
     float jumpStartZ;
 
     private float LeftLaneX => initialPosition.x - laneDistanceX;
@@ -43,10 +43,9 @@ public class PlayerController : MonoBehaviour
     private bool CanJump => !IsJumping;
     private bool CanRoll => !IsRolling;
 
-    [SerializeField] private float baseScoreMultiplier = 1;
-    private float score;
-    public int Score => Mathf.RoundToInt(score);
     public float TravelledDistance => transform.position.z - initialPosition.z;
+
+    private bool isDead = false;
 
     void Awake()
     {
@@ -56,7 +55,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        ProcessInput();
+        if (!isDead)
+        {
+            ProcessInput();
+        }
 
         Vector3 position = transform.position;
 
@@ -66,8 +68,6 @@ public class PlayerController : MonoBehaviour
         ProcessRoll();
 
         transform.position = position;
-
-        score += baseScoreMultiplier * forwardSpeed * Time.deltaTime;
     }
 
     private void ProcessInput()
@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
     private float ProcessForwardMovement()
     {
-        return transform.position.z + forwardSpeed * Time.deltaTime;
+        return transform.position.z + ForwardSpeed * Time.deltaTime;
     }
 
     private void StartJump()
@@ -166,8 +166,13 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        forwardSpeed = 0;
+        ForwardSpeed = 0;
+        horizontalSpeed = 0;
+        targetPositionX = transform.position.x;
+        isDead = true;
         StopRoll();
         StopJump();
+        regularCollider.enabled = false;
+        rollCollider.enabled = false;
     }
 }
